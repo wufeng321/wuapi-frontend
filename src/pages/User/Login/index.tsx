@@ -1,13 +1,10 @@
 import { Footer } from '@/components';
-import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import {
-  AlipayCircleOutlined,
   LockOutlined,
   MobileOutlined,
-  TaobaoCircleOutlined,
   UserOutlined,
-  WeiboCircleOutlined,
+
 } from '@ant-design/icons';
 import {
   LoginForm,
@@ -19,7 +16,6 @@ import { Helmet, history, useModel } from '@umijs/max';
 import { Alert, Tabs, message } from 'antd';
 import { createStyles } from 'antd-style';
 import React, { useState } from 'react';
-import { flushSync } from 'react-dom';
 import Settings from '../../../../config/defaultSettings';
 import {userLoginUsingPost} from "@/services/wuapi-backend/userController";
 import {Link} from "@@/exports";
@@ -58,18 +54,7 @@ const useStyles = createStyles(({ token }) => {
     },
   };
 });
-const ActionIcons = () => {
-  const { styles } = useStyles();
-  return (
-    <>
-      <AlipayCircleOutlined key="AlipayCircleOutlined" className={styles.action} />
-      <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={styles.action} />
-      <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.action} />
-    </>
-  );
-};
 const Lang = () => {
-  const { styles } = useStyles();
   return;
 };
 const LoginMessage: React.FC<{
@@ -87,21 +72,10 @@ const LoginMessage: React.FC<{
   );
 };
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [userLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const {setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
-      flushSync(() => {
-        setInitialState((s) => ({
-          ...s,
-          currentUser: userInfo,
-        }));
-      });
-    }
-  };
   const handleSubmit = async (values: API.UserLoginRequest) => {
     try {
       // 调用UserLoginUsingPost方法进行用户登录，values为用户信息对象
@@ -120,6 +94,8 @@ const Login: React.FC = () => {
           loginUser: res.data
         });
         return;
+      }else{
+        message.error(res.message);
       }
       // 如果抛出异常
     } catch (error) {

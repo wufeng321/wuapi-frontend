@@ -10,7 +10,7 @@ import {userRegisterUsingPost} from "@/services/wuapi-backend/userController";
 import {Link} from "@@/exports";
 
 
-const LoginMessage: React.FC<{
+const RegisterMessage: React.FC<{
   content: string;
 }> = ({content}) => {
   return (
@@ -25,7 +25,7 @@ const LoginMessage: React.FC<{
   );
 };
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const [userLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
 
@@ -90,7 +90,7 @@ const Login: React.FC = () => {
                 window.location.replace("/user/login")
               }, 400)
             } else {
-              message.error("注册失败");
+              message.error("注册失败,"+res.message);
             }
           }}
         >
@@ -107,7 +107,7 @@ const Login: React.FC = () => {
           />
 
           {status === 'error' && loginType === 'account' && (
-            <LoginMessage content={'错误的用户名和密码(admin/ant.design)'}/>
+            <RegisterMessage content={'错误的用户名和密码(admin/ant.design)'}/>
           )}
           {type === 'account' && (
             <>
@@ -187,4 +187,4 @@ const Login: React.FC = () => {
     ;
 };
 
-export default Login;
+export default Register;
