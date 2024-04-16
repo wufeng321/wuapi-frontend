@@ -22,6 +22,7 @@ import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import Settings from '../../../../config/defaultSettings';
 import {userLoginUsingPost} from "@/services/wuapi-backend/userController";
+import {Link} from "@@/exports";
 const useStyles = createStyles(({ token }) => {
   return {
     action: {
@@ -154,7 +155,7 @@ const Login: React.FC = () => {
           initialValues={{
             autoLogin: true,
           }}
-          actions={['其他登录方式 :', <ActionIcons key="icons" />]}
+          // actions={['其他登录方式 :', <ActionIcons key="icons" />]}
           onFinish={async (values) => {
             await handleSubmit(values as API.UserLoginRequest);
           }}
@@ -274,13 +275,14 @@ const Login: React.FC = () => {
             <ProFormCheckbox noStyle name="autoLogin">
               自动登录
             </ProFormCheckbox>
-            <a
+            <Link
               style={{
                 float: 'right',
               }}
+              to={'/user/register'}
             >
-              忘记密码 ?
-            </a>
+              没有账号？去注册
+            </Link>
           </div>
         </LoginForm>
       </div>
