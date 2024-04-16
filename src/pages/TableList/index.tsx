@@ -1,6 +1,6 @@
-import { addRule, removeRule, rule, updateRule } from '@/services/ant-design-pro/api';
-import { PlusOutlined } from '@ant-design/icons';
-import type { ActionType, ProColumns, ProDescriptionsItemProps } from '@ant-design/pro-components';
+import {addRule, removeRule, updateRule} from '@/services/ant-design-pro/api';
+import {PlusOutlined} from '@ant-design/icons';
+import type {ActionType, ProColumns, ProDescriptionsItemProps} from '@ant-design/pro-components';
 import {
   FooterToolbar,
   ModalForm,
@@ -11,13 +11,11 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import '@umijs/max';
-import { Button, Drawer, Input, message } from 'antd';
-import React, { useRef, useState } from 'react';
-import type { FormValueType } from './components/UpdateForm';
+import {Button, Drawer, message} from 'antd';
+import React, {useRef, useState} from 'react';
+import type {FormValueType} from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import {
-  listInterfaceInfoByPageUsingGet
-} from "@/services/wuapi-backend/interfaceInfoController";
+import {listInterfaceInfoByPageUsingGet} from "@/services/wuapi-backend/interfaceInfoController";
 import {SortOrder} from "antd/lib/table/interface";
 
 /**
