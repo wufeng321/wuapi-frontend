@@ -213,20 +213,22 @@ const TableList: React.FC = () => {
           </Button>,
         ]}
         request={async (params, sort: Record<string, SortOrder>, filter: Record<string, React.ReactText[] | null>)=>{
-          const res = await listInterfaceInfoByPageUsingGet({
-            ...params
-          });
-          if(res?.data){
-            return {
-              data: res?.data.records||[],
-              success: true,
-              total: res.total,
-            };
-          }
-          return {
-            data: [],
-            success: false,
-          };
+            const res = await listInterfaceInfoByPageUsingGet({
+              ...params
+            });
+            if(res?.data){
+              return {
+                data: res?.data.records||[],
+                success: true,
+                total: res.total,
+              };
+            }else{
+              return {
+                data: [],
+                success: false,
+                total: 0,
+              };
+            }
           }
         }
         columns={columns}

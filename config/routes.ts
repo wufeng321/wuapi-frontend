@@ -7,18 +7,18 @@ export default [
       { name: '注册', path: '/user/register', component: './User/Register' },
     ],
   },
-  { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
+  // { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
   {
     path: '/admin',
     name: '管理页',
     icon: 'crown',
     access: 'canAdmin',
     routes: [
-      { path: '/admin', redirect: '/admin/sub-page' },
-      { path: '/admin/sub-page', name: '二级管理页', component: './Admin' },
+      // { path: '/admin', redirect: '/admin/sub-page' },
+      {name: '接口管理',icon: 'table',  path: '/admin/interface_info', component: './InterfaceInfo' },
     ],
   },
-  { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
-  { path: '/', redirect: '/welcome' },
+  // { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
+  // { path: '/', redirect: '/welcome' },
   { path: '*', layout: false, component: './404' },
 ];
