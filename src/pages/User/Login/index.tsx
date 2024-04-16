@@ -21,6 +21,7 @@ import { createStyles } from 'antd-style';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import Settings from '../../../../config/defaultSettings';
+import {userLoginUsingPost} from "@/services/wuapi-backend/userController";
 const useStyles = createStyles(({ token }) => {
   return {
     action: {
@@ -100,25 +101,28 @@ const Login: React.FC = () => {
       });
     }
   };
-  const handleSubmit = async (values: API.LoginParams) => {
+  const handleSubmit = async (values: API.UserLoginRequest) => {
     try {
-      // 登录
-      const msg = await login({
-        ...values,
-        type,
-      });
-      if (msg.status === 'ok') {
-        const defaultLoginSuccessMessage = '登录成功！';
-        message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
-        const urlParams = new URL(window.location.href).searchParams;
-        history.push(urlParams.get('redirect') || '/');
+      // 调用UserLoginUsingPost方法进行用户登录，values为用户信息对象
+      const res = await userLoginUsingPost({...values,});
+      if(res.data){
+        // 创建一个新的 URL 对象，并获取当前 window.location.href 的查询参数
+        let urlParams = new URL(window.location.href).searchParams;
+        setTimeout(() => {
+          // 设置一个延迟100毫秒的定时器
+          // 定时器触发后，导航到重定向URL，如果没有重定向URL，则导航到根路径
+          // 将用户重定向到'redirect’参数指定的 URL，如果 'redirect'参数不存在，则重定向到首页('/')
+          history.push(urlParams.get('redirect') || '/');
+        },100)
+        // 用登录用户的数据更新全局状态
+        setInitialState({
+          loginUser: res.data
+        });
         return;
       }
-      console.log(msg);
-      // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
+      // 如果抛出异常
     } catch (error) {
+      // 定义默认的登录失败消息
       const defaultLoginFailureMessage = '登录失败，请重试！';
       console.log(error);
       message.error(defaultLoginFailureMessage);
@@ -152,7 +156,7 @@ const Login: React.FC = () => {
           }}
           actions={['其他登录方式 :', <ActionIcons key="icons" />]}
           onFinish={async (values) => {
-            await handleSubmit(values as API.LoginParams);
+            await handleSubmit(values as API.UserLoginRequest);
           }}
         >
           <Tabs
@@ -177,7 +181,7 @@ const Login: React.FC = () => {
           {type === 'account' && (
             <>
               <ProFormText
-                name="username"
+                name="userAccount"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined />,
@@ -191,7 +195,7 @@ const Login: React.FC = () => {
                 ]}
               />
               <ProFormText.Password
-                name="password"
+                name="userPassword"
                 fieldProps={{
                   size: 'large',
                   prefix: <LockOutlined />,
