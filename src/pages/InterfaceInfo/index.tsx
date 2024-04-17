@@ -13,10 +13,11 @@ import React, {useRef, useState} from 'react';
 import UpdateForm from './components/UpdateForm';
 import {
   addInterfaceInfoUsingPost,
-  listInterfaceInfoByPageUsingGet
+  listInterfaceInfoByPageUsingGet, updateInterfaceInfoUsingPost,deleteInterfaceInfoUsingPost
 } from "@/services/wuapi-backend/interfaceInfoController";
 import {SortOrder} from "antd/lib/table/interface";
 import CreateModal from "@/pages/InterfaceInfo/components/CreateModal";
+import UpdateModal from "@/pages/InterfaceInfo/components/UpdateModal";
 
 
 const TableList: React.FC = () => {
@@ -32,8 +33,8 @@ const TableList: React.FC = () => {
   const [updateModalOpen, handleUpdateModalOpen] = useState<boolean>(false);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+  const [currentRow, setCurrentRow] = useState<API.InterfaceInfo>();
+  const [selectedRowsState, setSelectedRows] = useState<API.InterfaceInfo[]>([]);
 
   /**
    * @en-US Add node
@@ -49,6 +50,8 @@ const TableList: React.FC = () => {
       hide();
       message.success('创建成功');
       handleModalOpen(false)
+      // 刷新表格
+      actionRef.current?.reload();
       return true;
     } catch (error) {
       hide();
@@ -63,20 +66,19 @@ const TableList: React.FC = () => {
    *
    * @param fields
    */
-  const handleUpdate = async (fields: FormValueType) => {
-    const hide = message.loading('Configuring');
+  const handleUpdate = async (fields: API.InterfaceInfo) => {
+    if(!currentRow){
+      return;
+    }
+    const hide = message.loading('正在修改');
     try {
-      await updateRule({
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      });
+      await updateInterfaceInfoUsingPost({id: currentRow.id,...fields});
       hide();
-      message.success('Configuration is successful');
+      message.success('操作成功');
       return true;
-    } catch (error) {
+    } catch (error:any) {
       hide();
-      message.error('Configuration failed, please try again!');
+      message.error('操作失败'+error.message);
       return false;
     }
   };
@@ -87,19 +89,20 @@ const TableList: React.FC = () => {
    *
    * @param selectedRows
    */
-  const handleRemove = async (selectedRows: API.RuleListItem[]) => {
+  const handleRemove = async (record: API.InterfaceInfo[]) => {
     const hide = message.loading('正在删除');
-    if (!selectedRows) return true;
+    if (!record) return true;
     try {
-      await removeRule({
-        key: selectedRows.map((row) => row.key),
+      await deleteInterfaceInfoUsingPost({
+        id: record.id,
       });
       hide();
-      message.success('Deleted successfully and will refresh soon');
+      message.success('删除成功');
+      actionRef.current?.reload();
       return true;
-    } catch (error) {
+    } catch (error:any) {
       hide();
-      message.error('Delete failed, please try again');
+      message.error('删除失败'+error.message);
       return false;
     }
   };
@@ -197,6 +200,15 @@ const TableList: React.FC = () => {
         >
           修改
         </a>,
+        <a
+          color={'red'}
+          key="config"
+          onClick={() => {
+            handleRemove(record);
+          }}
+        >
+          删除
+        </a>,
       ],
     },
   ];
@@ -287,27 +299,29 @@ const TableList: React.FC = () => {
           <Button type="primary">批量审批</Button>
         </FooterToolbar>
       )}
-      <UpdateForm
-        onSubmit={async (value) => {
-          const success = await handleUpdate(value);
-          if (success) {
-            handleUpdateModalOpen(false);
-            setCurrentRow(undefined);
-            if (actionRef.current) {
-              actionRef.current.reload();
+      <UpdateModal
+        values={currentRow||{}}
+        columns={columns}
+        onCancel={()=>{
+            handleUpdateModalOpen(false)
+            if(!showDetail){
+              setCurrentRow(undefined);
             }
           }
-        }}
-        onCancel={() => {
-          handleUpdateModalOpen(false);
-          if (!showDetail) {
-            setCurrentRow(undefined);
+        }
+        onSubmit={
+          async (values) => {
+            const success = await  handleUpdate(values);
+            if(success){
+              handleUpdateModalOpen(false);
+              setCurrentRow(undefined);
+            }
+            if(actionRef.current){
+              actionRef.current?.reload();
+            }
           }
-        }}
-        updateModalOpen={updateModalOpen}
-        values={currentRow || {}}
-      />
-
+        }
+        visible={updateModalOpen}/>
       <Drawer
         width={600}
         open={showDetail}
