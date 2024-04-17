@@ -202,7 +202,7 @@ const TableList: React.FC = () => {
   ];
   return (
     <PageContainer>
-      <ProTable<API.RuleListItem, API.PageParams>
+      <ProTable<API.InterfaceInfo, API.PageParams>
         headerTitle={'查询表格'}
         actionRef={actionRef}
         rowKey="key"
@@ -220,17 +220,24 @@ const TableList: React.FC = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={async (params, sort: Record<string, SortOrder>, filter: Record<string, React.ReactText[] | null>)=>{
-            const res = await listInterfaceInfoByPageUsingGet({
+        request={async (params: T & {
+                          pageSize: number;
+                          current: number;
+                        },
+                        sort,
+                        filter,)=>{
+            const res: any = await listInterfaceInfoByPageUsingGet({
               ...params
             });
             if(res?.data){
+              // 返回一个包含数据、成功状态、总条数的对象
               return {
                 data: res?.data.records||[],
                 success: true,
-                total: res.total,
+                total: res.data.total||0,
               };
             }else{
+              // 如果数据不存在返回一个空数组、失败状态、0总条数的对象
               return {
                 data: [],
                 success: false,
@@ -240,6 +247,9 @@ const TableList: React.FC = () => {
           }
         }
         columns={columns}
+        pagination={{
+          pageSize: 10,
+        }}
         rowSelection={{
           onChange: (_, selectedRows) => {
             setSelectedRows(selectedRows);
