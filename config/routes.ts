@@ -15,7 +15,7 @@ export default [
     access: 'canAdmin',
     routes: [
       // { path: '/admin', redirect: '/admin/sub-page' },
-      {name: '接口管理',icon: 'table',  path: '/admin/interface_info', component: './InterfaceInfo' },
+      {name: '接口管理',icon: 'table',  path: '/admin/interface_info', component: './Admin/InterfaceInfo' },
     ],
   },
   // { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
