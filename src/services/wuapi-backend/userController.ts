@@ -84,8 +84,8 @@ export async function listUserByPageUsingGet(
 
 /** userLogin POST /api/user/login */
 export async function userLoginUsingPost(
-  body: { userPassword?: string; checkPassword?: string; userAccount?: string },
-  options?: { [p: string]: any },
+  body: API.UserLoginRequest,
+  options?: { [key: string]: any },
 ) {
   return request<API.BaseResponseUser>('/api/user/login', {
     method: 'POST',

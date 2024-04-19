@@ -1,4 +1,3 @@
-import {removeRule, updateRule} from '@/services/ant-design-pro/api';
 import {PlusOutlined} from '@ant-design/icons';
 import type {ActionType, ProColumns, ProDescriptionsItemProps} from '@ant-design/pro-components';
 import {
@@ -10,12 +9,13 @@ import {
 import '@umijs/max';
 import {Button, Drawer, message} from 'antd';
 import React, {useRef, useState} from 'react';
-import UpdateForm from './components/UpdateForm';
 import {
   addInterfaceInfoUsingPost,
-  listInterfaceInfoByPageUsingGet, updateInterfaceInfoUsingPost,deleteInterfaceInfoUsingPost
+  listInterfaceInfoByPageUsingGet,
+  updateInterfaceInfoUsingPost,
+  deleteInterfaceInfoUsingPost,
+  onlineInterfaceInfoUsingPost, offlineInterfaceInfoUsingPost
 } from "@/services/wuapi-backend/interfaceInfoController";
-import {SortOrder} from "antd/lib/table/interface";
 import CreateModal from "@/pages/InterfaceInfo/components/CreateModal";
 import UpdateModal from "@/pages/InterfaceInfo/components/UpdateModal";
 
@@ -103,6 +103,52 @@ const TableList: React.FC = () => {
     } catch (error:any) {
       hide();
       message.error('删除失败'+error.message);
+      return false;
+    }
+  };
+
+  /**
+   * @zh-CN 发布接口
+   *
+   * @param selectedRows
+   */
+  const handleOnline = async (record: API.InterfaceInfo[]) => {
+    const hide = message.loading('发布中');
+    if (!record) return true;
+    try {
+      await onlineInterfaceInfoUsingPost({
+        id: record.id,
+      });
+      hide();
+      message.success('发布成功');
+      actionRef.current?.reload();
+      return true;
+    } catch (error:any) {
+      hide();
+      message.error('发布失败'+error.message);
+      return false;
+    }
+  };
+
+  /**
+   * @zh-CN 下线接口
+   *
+   * @param selectedRows
+   */
+  const handleOffline = async (record: API.InterfaceInfo[]) => {
+    const hide = message.loading('下线中');
+    if (!record) return true;
+    try {
+      await offlineInterfaceInfoUsingPost({
+        id: record.id,
+      });
+      hide();
+      message.success('下线成功');
+      actionRef.current?.reload();
+      return true;
+    } catch (error:any) {
+      hide();
+      message.error('下线失败'+error.message);
       return false;
     }
   };
@@ -200,15 +246,37 @@ const TableList: React.FC = () => {
         >
           修改
         </a>,
-        <a
-          color={'red'}
+        record.status===0?
+          <a
+            color={'red'}
+            key="online"
+            onClick={() => {
+              handleOnline(record);
+            }}
+          >
+            发布
+          </a>:null,
+        record.status===1?
+          <Button
+            type="text"
+            key="offline"
+            danger
+            onClick={() => {
+              handleOffline(record);
+            }}
+          >
+            下线
+          </Button>:null,
+        <Button
+          type="text"
           key="config"
+          danger
           onClick={() => {
             handleRemove(record);
           }}
         >
           删除
-        </a>,
+        </Button>,
       ],
     },
   ];
@@ -217,7 +285,7 @@ const TableList: React.FC = () => {
       <ProTable<API.InterfaceInfo, API.PageParams>
         headerTitle={'查询表格'}
         actionRef={actionRef}
-        rowKey="key"
+        rowKey="id"
         search={{
           labelWidth: 120,
         }}
