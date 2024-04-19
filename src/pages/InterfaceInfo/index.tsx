@@ -12,7 +12,6 @@ const Index: React.FC = () => {
   const [data, setData] = useState<API.InterfaceInfo>();
   const [invokeRes, setInvokeRes] = useState<any>();
   const [invokeLoading, setInvokeLoading] = useState(false);
-
   const params = useParams();
 
   const loadData = async () => {
