@@ -62,7 +62,7 @@ const TableList: React.FC = () => {
 
   /**
    * @en-US Update node
-   * @zh-CN 更新节点
+   * @zh-CN 更新接口
    *
    * @param fields
    */
@@ -85,7 +85,7 @@ const TableList: React.FC = () => {
 
   /**
    *  Delete node
-   * @zh-CN 删除节点
+   * @zh-CN 删除接口
    *
    * @param selectedRows
    */
