@@ -1,4 +1,5 @@
 export default [
+  { path: '/', name: '主页', icon: 'smile', component: './Index' },
   {
     path: '/user',
     layout: false,
@@ -7,7 +8,6 @@ export default [
       { name: '注册', path: '/user/register', component: './User/Register' },
     ],
   },
-  // { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
   {
     path: '/admin',
     name: '管理页',
