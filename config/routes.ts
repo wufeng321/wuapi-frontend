@@ -17,6 +17,7 @@ export default [
     routes: [
       // { path: '/admin', redirect: '/admin/sub-page' },
       {name: '接口管理',icon: 'table',  path: '/admin/interface_info', component: './Admin/InterfaceInfo' },
+      {name: '接口分析',icon: 'analysis',  path: '/admin/interface_analysis', component: './Admin/InterfaceAnalysis' },
     ],
   },
   // { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
