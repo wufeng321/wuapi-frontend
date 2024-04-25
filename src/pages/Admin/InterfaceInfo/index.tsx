@@ -1,5 +1,15 @@
-import {PlusOutlined} from '@ant-design/icons';
-import type {ActionType, ProColumns, ProDescriptionsItemProps} from '@ant-design/pro-components';
+import CreateModal from '@/pages/Admin/InterfaceInfo/components/CreateModal';
+import UpdateModal from '@/pages/Admin/InterfaceInfo/components/UpdateModal';
+import {
+  addInterfaceInfoUsingPost,
+  deleteInterfaceInfoUsingPost,
+  listInterfaceInfoByPageUsingGet,
+  offlineInterfaceInfoUsingPost,
+  onlineInterfaceInfoUsingPost,
+  updateInterfaceInfoUsingPost,
+} from '@/services/wuapi-backend/interfaceInfoController';
+import { PlusOutlined } from '@ant-design/icons';
+import type { ActionType, ProColumns, ProDescriptionsItemProps } from '@ant-design/pro-components';
 import {
   FooterToolbar,
   PageContainer,
@@ -7,18 +17,8 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import '@umijs/max';
-import {Button, Drawer, message} from 'antd';
-import React, {useRef, useState} from 'react';
-import {
-  addInterfaceInfoUsingPost,
-  listInterfaceInfoByPageUsingGet,
-  updateInterfaceInfoUsingPost,
-  deleteInterfaceInfoUsingPost,
-  onlineInterfaceInfoUsingPost, offlineInterfaceInfoUsingPost
-} from "@/services/wuapi-backend/interfaceInfoController";
-import CreateModal from "@/pages/Admin/InterfaceInfo/components/CreateModal";
-import UpdateModal from "@/pages/Admin/InterfaceInfo/components/UpdateModal";
-
+import { Button, Drawer, message } from 'antd';
+import React, { useRef, useState } from 'react';
 
 const TableList: React.FC = () => {
   /**
@@ -49,13 +49,13 @@ const TableList: React.FC = () => {
       });
       hide();
       message.success('创建成功');
-      handleModalOpen(false)
+      handleModalOpen(false);
       // 刷新表格
       actionRef.current?.reload();
       return true;
     } catch (error) {
       hide();
-      message.error('创建失败'+error.message);
+      message.error('创建失败' + error.message);
       return false;
     }
   };
@@ -67,18 +67,18 @@ const TableList: React.FC = () => {
    * @param fields
    */
   const handleUpdate = async (fields: API.InterfaceInfo) => {
-    if(!currentRow){
+    if (!currentRow) {
       return;
     }
     const hide = message.loading('正在修改');
     try {
-      await updateInterfaceInfoUsingPost({id: currentRow.id,...fields});
+      await updateInterfaceInfoUsingPost({ id: currentRow.id, ...fields });
       hide();
       message.success('操作成功');
       return true;
-    } catch (error:any) {
+    } catch (error: any) {
       hide();
-      message.error('操作失败'+error.message);
+      message.error('操作失败' + error.message);
       return false;
     }
   };
@@ -100,9 +100,9 @@ const TableList: React.FC = () => {
       message.success('删除成功');
       actionRef.current?.reload();
       return true;
-    } catch (error:any) {
+    } catch (error: any) {
       hide();
-      message.error('删除失败'+error.message);
+      message.error('删除失败' + error.message);
       return false;
     }
   };
@@ -123,9 +123,9 @@ const TableList: React.FC = () => {
       message.success('发布成功');
       actionRef.current?.reload();
       return true;
-    } catch (error:any) {
+    } catch (error: any) {
       hide();
-      message.error('发布失败'+error.message);
+      message.error('发布失败' + error.message);
       return false;
     }
   };
@@ -146,9 +146,9 @@ const TableList: React.FC = () => {
       message.success('下线成功');
       actionRef.current?.reload();
       return true;
-    } catch (error:any) {
+    } catch (error: any) {
       hide();
-      message.error('下线失败'+error.message);
+      message.error('下线失败' + error.message);
       return false;
     }
   };
@@ -169,10 +169,11 @@ const TableList: React.FC = () => {
       dataIndex: 'name',
       valueType: 'text',
       formItemProps: {
-        rules:[
+        rules: [
           {
             required: true,
-          }]
+          },
+        ],
       },
     },
     {
@@ -246,7 +247,7 @@ const TableList: React.FC = () => {
         >
           修改
         </a>,
-        record.status===0?
+        record.status === 0 ? (
           <a
             color={'red'}
             key="online"
@@ -255,8 +256,9 @@ const TableList: React.FC = () => {
             }}
           >
             发布
-          </a>:null,
-        record.status===1?
+          </a>
+        ) : null,
+        record.status === 1 ? (
           <Button
             type="text"
             key="offline"
@@ -266,7 +268,8 @@ const TableList: React.FC = () => {
             }}
           >
             下线
-          </Button>:null,
+          </Button>
+        ) : null,
         <Button
           type="text"
           key="config"
@@ -286,6 +289,7 @@ const TableList: React.FC = () => {
         headerTitle={'查询表格'}
         actionRef={actionRef}
         rowKey="id"
+        scroll={{ x: 1300 }}
         search={{
           labelWidth: 120,
         }}
@@ -300,32 +304,35 @@ const TableList: React.FC = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={async (params: T & {
-                          pageSize: number;
-                          current: number;
-                        },
-                        sort,
-                        filter,)=>{
-            const res: any = await listInterfaceInfoByPageUsingGet({
-              ...params
-            });
-            if(res?.data){
-              // 返回一个包含数据、成功状态、总条数的对象
-              return {
-                data: res?.data.records||[],
-                success: true,
-                total: res.data.total||0,
-              };
-            }else{
-              // 如果数据不存在返回一个空数组、失败状态、0总条数的对象
-              return {
-                data: [],
-                success: false,
-                total: 0,
-              };
-            }
+        request={async (
+          params: T & {
+            pageSize: number;
+            current: number;
+          },
+          sort,
+          filter,
+        ) => {
+          const res: any = await listInterfaceInfoByPageUsingGet({
+            ...params,
+          });
+          console.log(sort);
+          console.log(filter);
+          if (res?.data) {
+            // 返回一个包含数据、成功状态、总条数的对象
+            return {
+              data: res?.data.records || [],
+              success: true,
+              total: res.data.total || 0,
+            };
+          } else {
+            // 如果数据不存在返回一个空数组、失败状态、0总条数的对象
+            return {
+              data: [],
+              success: false,
+              total: 0,
+            };
           }
-        }
+        }}
         columns={columns}
         pagination={{
           pageSize: 10,
@@ -350,46 +357,33 @@ const TableList: React.FC = () => {
               </a>{' '}
               项 &nbsp;&nbsp;
               <span>
-                服务调用次数总计 {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)} 万
+                服务调用次数总计 {selectedRowsState.reduce((pre, item) => pre + item.id!, 0)} 万
               </span>
             </div>
           }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            批量删除
-          </Button>
-          <Button type="primary">批量审批</Button>
-        </FooterToolbar>
+        ></FooterToolbar>
       )}
       <UpdateModal
-        values={currentRow||{}}
+        values={currentRow || {}}
         columns={columns}
-        onCancel={()=>{
-            handleUpdateModalOpen(false)
-            if(!showDetail){
-              setCurrentRow(undefined);
-            }
+        onCancel={() => {
+          handleUpdateModalOpen(false);
+          if (!showDetail) {
+            setCurrentRow(undefined);
           }
-        }
-        onSubmit={
-          async (values) => {
-            const success = await  handleUpdate(values);
-            if(success){
-              handleUpdateModalOpen(false);
-              setCurrentRow(undefined);
-            }
-            if(actionRef.current){
-              actionRef.current?.reload();
-            }
+        }}
+        onSubmit={async (values) => {
+          const success = await handleUpdate(values);
+          if (success) {
+            handleUpdateModalOpen(false);
+            setCurrentRow(undefined);
           }
-        }
-        visible={updateModalOpen}/>
+          if (actionRef.current) {
+            actionRef.current?.reload();
+          }
+        }}
+        visible={updateModalOpen}
+      />
       <Drawer
         width={600}
         open={showDetail}
@@ -415,9 +409,14 @@ const TableList: React.FC = () => {
       </Drawer>
       <CreateModal
         columns={columns}
-        onCancel={()=>{handleModalOpen(false)}}
-        onSubmit={(values => {handleAdd(values)})}
-        visible={createModalOpen}/>
+        onCancel={() => {
+          handleModalOpen(false);
+        }}
+        onSubmit={(values) => {
+          handleAdd(values);
+        }}
+        visible={createModalOpen}
+      />
     </PageContainer>
   );
 };
