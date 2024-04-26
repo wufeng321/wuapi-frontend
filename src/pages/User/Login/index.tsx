@@ -1,24 +1,13 @@
 import { Footer } from '@/components';
-import { getFakeCaptcha } from '@/services/ant-design-pro/login';
-import {
-  LockOutlined,
-  MobileOutlined,
-  UserOutlined,
-
-} from '@ant-design/icons';
-import {
-  LoginForm,
-  ProFormCaptcha,
-  ProFormCheckbox,
-  ProFormText,
-} from '@ant-design/pro-components';
+import { userLoginUsingPost } from '@/services/wuapi-backend/userController';
+import { Link } from '@@/exports';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { LoginForm, ProFormText } from '@ant-design/pro-components';
 import { Helmet, history, useModel } from '@umijs/max';
 import { Alert, Tabs, message } from 'antd';
 import { createStyles } from 'antd-style';
 import React, { useState } from 'react';
 import Settings from '../../../../config/defaultSettings';
-import {userLoginUsingPost} from "@/services/wuapi-backend/userController";
-import {Link} from "@@/exports";
 const useStyles = createStyles(({ token }) => {
   return {
     action: {
@@ -74,13 +63,13 @@ const LoginMessage: React.FC<{
 const Login: React.FC = () => {
   const [userLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
-  const {setInitialState } = useModel('@@initialState');
+  const { setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
   const handleSubmit = async (values: API.UserLoginRequest) => {
     try {
       // 调用UserLoginUsingPost方法进行用户登录，values为用户信息对象
-      const res = await userLoginUsingPost({...values,});
-      if(res.data){
+      const res = await userLoginUsingPost({ ...values });
+      if (res.data) {
         // 创建一个新的 URL 对象，并获取当前 window.location.href 的查询参数
         let urlParams = new URL(window.location.href).searchParams;
         setTimeout(() => {
@@ -88,19 +77,19 @@ const Login: React.FC = () => {
           // 定时器触发后，导航到重定向URL，如果没有重定向URL，则导航到根路径
           // 将用户重定向到'redirect’参数指定的 URL，如果 'redirect'参数不存在，则重定向到首页('/')
           history.push(urlParams.get('redirect') || '/');
-        },100)
+        }, 100);
         // 用登录用户的数据更新全局状态
         setInitialState({
-          loginUser: res.data
+          loginUser: res.data,
         });
         return;
-      }else{
+      } else {
         message.error(res.message);
       }
       // 如果抛出异常
     } catch (error) {
       // 定义默认的登录失败消息
-      const defaultLoginFailureMessage = '登录失败，请重试！';
+      const defaultLoginFailureMessage = `登录失败，请重试！${error.message}`;
       console.log(error);
       message.error(defaultLoginFailureMessage);
     }
@@ -125,9 +114,9 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
-          title="Ant Design"
-          subTitle={'Ant Design 是西湖区最具影响力的 Web 设计规范'}
+          logo={<img alt="logo" src="/mylogo.png" />}
+          title="API接口开放平台"
+          subTitle={'一个丰富的API开放调用平台'}
           initialValues={{
             autoLogin: true,
           }}
@@ -144,10 +133,6 @@ const Login: React.FC = () => {
               {
                 key: 'account',
                 label: '账户密码登录',
-              },
-              {
-                key: 'mobile',
-                label: '手机号登录',
               },
             ]}
           />
@@ -189,70 +174,14 @@ const Login: React.FC = () => {
           )}
 
           {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />}
-          {type === 'mobile' && (
-            <>
-              <ProFormText
-                fieldProps={{
-                  size: 'large',
-                  prefix: <MobileOutlined />,
-                }}
-                name="mobile"
-                placeholder={'请输入手机号！'}
-                rules={[
-                  {
-                    required: true,
-                    message: '手机号是必填项！',
-                  },
-                  {
-                    pattern: /^1\d{10}$/,
-                    message: '不合法的手机号！',
-                  },
-                ]}
-              />
-              <ProFormCaptcha
-                fieldProps={{
-                  size: 'large',
-                  prefix: <LockOutlined />,
-                }}
-                captchaProps={{
-                  size: 'large',
-                }}
-                placeholder={'请输入验证码！'}
-                captchaTextRender={(timing, count) => {
-                  if (timing) {
-                    return `${count} ${'秒后重新获取'}`;
-                  }
-                  return '获取验证码';
-                }}
-                name="captcha"
-                rules={[
-                  {
-                    required: true,
-                    message: '验证码是必填项！',
-                  },
-                ]}
-                onGetCaptcha={async (phone) => {
-                  const result = await getFakeCaptcha({
-                    phone,
-                  });
-                  if (!result) {
-                    return;
-                  }
-                  message.success('获取验证码成功！验证码为：1234');
-                }}
-              />
-            </>
-          )}
           <div
             style={{
               marginBottom: 24,
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin">
-              自动登录
-            </ProFormCheckbox>
             <Link
               style={{
+                marginBottom: 24,
                 float: 'right',
               }}
               to={'/user/register'}

@@ -1,18 +1,17 @@
 import Footer from '@/components/Footer';
-import {LockOutlined, UserOutlined,} from '@ant-design/icons';
-import {LoginForm, ProFormText,} from '@ant-design/pro-components';
-import {useEmotionCss} from '@ant-design/use-emotion-css';
-import {Helmet} from '@umijs/max';
-import {Alert, message, Tabs} from 'antd';
+import { userRegisterUsingPost } from '@/services/wuapi-backend/userController';
+import { Link } from '@@/exports';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { LoginForm, ProFormText } from '@ant-design/pro-components';
+import { useEmotionCss } from '@ant-design/use-emotion-css';
+import { Helmet } from '@umijs/max';
+import { Alert, Tabs, message } from 'antd';
+import React, { useState } from 'react';
 import Settings from '../../../../config/defaultSettings';
-import React, {useState} from 'react';
-import {userRegisterUsingPost} from "@/services/wuapi-backend/userController";
-import {Link} from "@@/exports";
-
 
 const RegisterMessage: React.FC<{
   content: string;
-}> = ({content}) => {
+}> = ({ content }) => {
   return (
     <Alert
       style={{
@@ -41,17 +40,14 @@ const Register: React.FC = () => {
     };
   });
 
-
-  const {status, type: loginType} = userLoginState;
+  const { status, type: loginType } = userLoginState;
 
   // 编程时路由跳转
 
   return (
     <div className={containerClassName}>
       <Helmet>
-        <title>
-          登录页 - {Settings.title}
-        </title>
+        <title>登录页 - {Settings.title}</title>
       </Helmet>
       <div
         style={{
@@ -64,12 +60,12 @@ const Register: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg"/>}
-          title="Api接口开放平台"
+          logo={<img alt="logo" src="/mylogo.png" />}
+          title="API接口开放平台"
           submitter={{
             searchConfig: {
-              submitText: '注册'
-            }
+              submitText: '注册',
+            },
           }}
           subTitle={
             <>
@@ -85,12 +81,12 @@ const Register: React.FC = () => {
           onFinish={async (values) => {
             const res = await userRegisterUsingPost(values as API.UserRegisterRequest);
             if (res.code === 0 && res.message === 'ok') {
-              message.success("注册成功，请去登陆");
+              message.success('注册成功，请去登陆');
               setTimeout(() => {
-                window.location.replace("/user/login")
-              }, 400)
+                window.location.replace('/user/login');
+              }, 400);
             } else {
-              message.error("注册失败,"+res.message);
+              message.error('注册失败,' + res.message);
             }
           }}
         >
@@ -102,12 +98,12 @@ const Register: React.FC = () => {
               {
                 key: 'account',
                 label: '账号密码注册',
-              }
+              },
             ]}
           />
 
           {status === 'error' && loginType === 'account' && (
-            <RegisterMessage content={'错误的用户名和密码(admin/ant.design)'}/>
+            <RegisterMessage content={'错误的用户名和密码(admin/ant.design)'} />
           )}
           {type === 'account' && (
             <>
@@ -115,45 +111,45 @@ const Register: React.FC = () => {
                 name="userAccount"
                 fieldProps={{
                   size: 'large',
-                  prefix: <UserOutlined/>,
+                  prefix: <UserOutlined />,
                 }}
                 placeholder={'账号：账号应大于3个字小于16个字'}
                 rules={[
                   {
                     required: true,
-                    pattern:/^.{3,16}$/,
+                    pattern: /^.{3,16}$/,
                     message: '账号必须大于3个字符并且小于16个字符！',
                   },
                 ]}
               />
               <ProFormText.Password
-                id='userPassword'
+                id="userPassword"
                 name="userPassword"
                 fieldProps={{
                   size: 'large',
-                  prefix: <LockOutlined/>,
+                  prefix: <LockOutlined />,
                 }}
                 placeholder={'密码'}
                 rules={[
                   {
                     required: true,
-                    pattern:/^.{3,16}$/,
+                    pattern: /^.{3,16}$/,
                     message: '密码必须大于3个字符并且小于16个字符！',
                   },
                 ]}
               />
               <ProFormText.Password
-                id='checkPassword'
+                id="checkPassword"
                 name="checkPassword"
                 fieldProps={{
                   size: 'large',
-                  prefix: <LockOutlined/>,
+                  prefix: <LockOutlined />,
                 }}
                 placeholder={'确认密码'}
                 rules={[
                   {
                     required: true,
-                    pattern:/^.{3,16}$/,
+                    pattern: /^.{3,16}$/,
                     message: '两次密码必须一致！',
                   },
                 ]}
@@ -163,14 +159,10 @@ const Register: React.FC = () => {
           <div
             style={{
               marginBottom: 24,
-              float: "right",
+              float: 'right',
             }}
           >
-            <Link
-              to={{pathname: '/user/login'}}
-            >
-              返回登录
-            </Link>
+            <Link to={{ pathname: '/user/login' }}>返回登录</Link>
             {/*<a*/}
             {/*  style={{*/}
             {/*    float: 'right',*/}
@@ -181,10 +173,9 @@ const Register: React.FC = () => {
           </div>
         </LoginForm>
       </div>
-      <Footer/>
+      <Footer />
     </div>
-  )
-    ;
+  );
 };
 
 export default Register;
