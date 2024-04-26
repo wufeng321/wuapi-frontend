@@ -120,7 +120,6 @@ const Login: React.FC = () => {
           initialValues={{
             autoLogin: true,
           }}
-          // actions={['其他登录方式 :', <ActionIcons key="icons" />]}
           onFinish={async (values) => {
             await handleSubmit(values as API.UserLoginRequest);
           }}
